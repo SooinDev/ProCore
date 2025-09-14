@@ -1,0 +1,21 @@
+# Database Configuration
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/procore?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+db.username=root
+db.password=YOUR_MYSQL_PASSWORD_HERE
+
+# Connection Pool Configuration
+db.initialSize=5
+db.maxTotal=20
+db.maxIdle=10
+db.minIdle=5
+db.maxWaitMillis=10000
+
+# MyBatis Configuration
+mybatis.mapper-locations=classpath:mappers/*.xml
+mybatis.type-aliases-package=com.procore.vo
+
+# Logging Configuration
+logging.level.com.procore.mapper=DEBUG
+logging.level.org.springframework=INFO
+logging.level.root=INFO

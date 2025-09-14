@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+  <!-- Properties 파일 로드 -->
+  <context:property-placeholder location="classpath:application.properties"/>
+
+  <!-- Service 패키지 컴포넌트 스캔 -->
+  <context:component-scan base-package="com.procore.service"/>
+
+  <!-- DataSource 설정 -->
+  <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${db.driver}"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.username}"/>
+    <property name="password" value="${db.password}"/>
+    <property name="initialSize" value="${db.initialSize}"/>
+    <property name="maxTotal" value="${db.maxTotal}"/>
+    <property name="maxIdle" value="${db.maxIdle}"/>
+    <property name="minIdle" value="${db.minIdle}"/>
+    <property name="maxWaitMillis" value="${db.maxWaitMillis}"/>
+  </bean>
+
+  <!-- SqlSessionFactory 설정 -->
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="mapperLocations" value="classpath:mappers/*.xml"/>
+    <property name="typeAliasesPackage" value="com.procore.vo"/>
+    <property name="configurationProperties">
+      <props>
+        <prop key="mapUnderscoreToCamelCase">true</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- MyBatis Mapper 스캔 -->
+  <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="com.procore.mapper"/>
+    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+  </bean>
+
+  <!-- Transaction Manager -->
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+
+  <!-- @Transactional 어노테이션 활성화 -->
+  <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.procore.mapper.MemberMapper">
+
+  <!-- 회원 등록 -->
+  <insert id="insertMember" parameterType="MemberVO" useGeneratedKeys="true" keyProperty="memberId">
+    INSERT INTO member (
+      email,
+      password,
+      nickname,
+      name,
+      phone,
+      address,
+      status
+    ) VALUES (
+               #{email},
+               #{password},
+               #{nickname},
+               #{name},
+               #{phone},
+               #{address},
+               #{status}
+             )
+  </insert>
+
+  <!-- 이메일로 회원 조회 (로그인용) -->
+  <select id="selectMemberByEmail" parameterType="String" resultType="MemberVO">
+    SELECT
+      member_id,
+      email,
+      password,
+      nickname,
+      nickname_changed_at,
+      name,
+      phone,
+      address,
+      status,
+      created_at,
+      updated_at
+    FROM member
+    WHERE email = #{email}
+      AND status != 'SUSPENDED'
+  </select>
+
+  <!-- 회원 정보 수정 (Dynamic SQL) -->
+  <update id="updateMember" parameterType="MemberVO">
+    UPDATE member
+    <set>
+      <if test="nickname != null">nickname = #{nickname},</if>
+      <if test="name != null">name = #{name},</if>
+      <if test="phone != null">phone = #{phone},</if>
+      <if test="address != null">address = #{address},</if>
+      <if test="status != null">status = #{status},</if>
+      updated_at = CURRENT_TIMESTAMP
+    </set>
+    WHERE member_id = #{memberId}
+  </update>
+
+  <!-- 회원 탈퇴 (실제로는 상태를 INACTIVE로 변경) -->
+  <update id="deleteMemberById" parameterType="Long">
+    UPDATE member SET
+                    status = 'INACTIVE',
+                    updated_at = CURRENT_TIMESTAMP
+    WHERE member_id = #{memberId}
+  </update>
+
+  <!-- 이메일 중복 체크 -->
+  <select id="countByEmail" parameterType="String" resultType="int">
+    SELECT COUNT(*)
+    FROM member
+    WHERE email = #{email}
+      AND status != 'INACTIVE'
+  </select>
+
+  <!-- 닉네임 중복 체크 -->
+  <select id="countByNickname" parameterType="String" resultType="int">
+    SELECT COUNT(*)
+    FROM member
+    WHERE nickname = #{nickname}
+      AND status != 'INACTIVE'
+  </select>
+
+  <!-- 전화번호 중복 체크 -->
+  <select id="countByPhone" parameterType="String" resultType="int">
+    SELECT COUNT(*)
+    FROM member
+    WHERE phone = #{phone}
+      AND phone IS NOT NULL
+      AND status != 'INACTIVE'
+  </select>
+
+  <!-- 닉네임만 수정 (7일 제한 체크용) -->
+  <update id="updateNickname" parameterType="map">
+    UPDATE member SET
+                    nickname = #{nickname},
+                    nickname_changed_at = CURRENT_TIMESTAMP,
+                    updated_at = CURRENT_TIMESTAMP
+    WHERE member_id = #{memberId}
+      AND (nickname_changed_at IS NULL
+      OR TIMESTAMPDIFF(DAY, nickname_changed_at, NOW()) >= 7)
+  </update>
+
+</mapper>
