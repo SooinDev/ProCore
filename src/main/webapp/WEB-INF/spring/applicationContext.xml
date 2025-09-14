@@ -17,6 +17,9 @@
   <!-- Service 패키지 컴포넌트 스캔 -->
   <context:component-scan base-package="com.procore.service"/>
 
+  <!-- Util 패키지 컴포넌트 스캔 추가 -->
+  <context:component-scan base-package="com.procore.util"/>
+
   <!-- DataSource 설정 -->
   <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="${db.driver}"/>
