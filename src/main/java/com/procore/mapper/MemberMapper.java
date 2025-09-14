@@ -10,7 +10,7 @@ public interface MemberMapper {
   MemberVO selectMemberByEmail(String email);
   int updateMember(MemberVO memberVO);
   int deleteMemberById(Long memberId);
-  int countByEmail(String email);
+  Long countByEmail(String email);
   int countByNickname(String nickname);
   int countByPhone(String phone);
   int updateNickname(Long memberId, String nickname);

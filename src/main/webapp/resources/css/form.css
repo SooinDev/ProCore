@@ -602,3 +602,12 @@
     background: var(--background-tertiary);
   }
 }
+
+.btn-secondary {
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+#emailCheckResult {
+  font-weight: 500;
+}

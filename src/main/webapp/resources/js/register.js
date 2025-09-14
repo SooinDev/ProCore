@@ -36,6 +36,118 @@ class ProCoreRegisterForm {
         this.clearFieldError(field);
       });
     });
+
+    // 이메일 중복확인 버튼 이벤트
+    const checkEmailBtn = document.getElementById('checkEmailBtn');
+    if (checkEmailBtn) {
+      checkEmailBtn.addEventListener('click', () => this.checkEmailDuplicate());
+    }
+
+    // 닉네임 중복확인 버튼 이벤트
+    const checkNicknameBtn = document.getElementById('checkNicknameBtn');
+    if (checkNicknameBtn) {
+      checkNicknameBtn.addEventListener('click', () => this.checkNicknameDuplicate());
+    }
+  }
+
+  // 이메일 중복확인 메서드
+  checkEmailDuplicate() {
+    const email = this.fields.email.value.trim();
+    const checkResult = document.getElementById('emailCheckResult');
+    const checkBtn = document.getElementById('checkEmailBtn');
+
+    // 이메일 유효성 먼저 체크
+    if (!this.validateEmail()) {
+      return;
+    }
+
+    // 버튼 로딩 상태
+    checkBtn.disabled = true;
+    checkBtn.textContent = '확인중...';
+    checkResult.textContent = '';
+
+    // AJAX 요청
+    fetch('/member/check-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `email=${encodeURIComponent(email)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // 사용 가능
+            checkResult.style.color = '#16a34a';
+            checkResult.textContent = data.message;
+            this.setFieldSuccess(this.fields.email);
+          } else {
+            // 중복됨
+            checkResult.style.color = '#dc2626';
+            checkResult.textContent = data.message;
+            this.setFieldError(this.fields.email, '이미 사용 중인 이메일입니다.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          checkResult.style.color = '#dc2626';
+          checkResult.textContent = '중복확인 중 오류가 발생했습니다.';
+        })
+        .finally(() => {
+          // 버튼 상태 복원
+          checkBtn.disabled = false;
+          checkBtn.textContent = '중복확인';
+        });
+  }
+
+  // 닉네임 중복확인 메서드
+  checkNicknameDuplicate() {
+    const nickname = this.fields.nickname.value.trim();
+    const checkResult = document.getElementById('nicknameCheckResult');
+    const checkBtn = document.getElementById('checkNicknameBtn');
+
+    // 닉네임 유효성 먼저 체크
+    if (!this.validateNickname()) {
+      return;
+    }
+
+    // 버튼 로딩 상태
+    checkBtn.disabled = true;
+    checkBtn.textContent = '확인중...';
+    checkResult.textContent = '';
+
+    // AJAX 요청
+    fetch('/member/check-nickname', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `nickname=${encodeURIComponent(nickname)}`
+    })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // 사용 가능
+            checkResult.style.color = '#16a34a';
+            checkResult.textContent = data.message;
+            this.setFieldSuccess(this.fields.nickname);
+          } else {
+            // 중복됨
+            checkResult.style.color = '#dc2626';
+            checkResult.textContent = data.message;
+            this.setFieldError(this.fields.nickname, '이미 사용 중인 닉네임입니다.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          checkResult.style.color = '#dc2626';
+          checkResult.textContent = '중복확인 중 오류가 발생했습니다.';
+        })
+        .finally(() => {
+          // 버튼 상태 복원
+          checkBtn.disabled = false;
+          checkBtn.textContent = '중복확인';
+        });
   }
 
   setupPasswordStrength() {
@@ -207,6 +319,16 @@ class ProCoreRegisterForm {
     if (errorElement) {
       errorElement.textContent = message;
     }
+
+    // 중복확인 결과 초기화 (이메일/닉네임 필드인 경우)
+    if (field === this.fields.email) {
+      const checkResult = document.getElementById('emailCheckResult');
+      if (checkResult) checkResult.textContent = '';
+    }
+    if (field === this.fields.nickname) {
+      const checkResult = document.getElementById('nicknameCheckResult');
+      if (checkResult) checkResult.textContent = '';
+    }
   }
 
   setFieldSuccess(field) {
@@ -233,6 +355,16 @@ class ProCoreRegisterForm {
     if (errorElement) {
       errorElement.textContent = '';
     }
+
+    // 중복확인 결과 초기화 (이메일/닉네임 필드인 경우)
+    if (field === this.fields.email) {
+      const checkResult = document.getElementById('emailCheckResult');
+      if (checkResult) checkResult.textContent = '';
+    }
+    if (field === this.fields.nickname) {
+      const checkResult = document.getElementById('nicknameCheckResult');
+      if (checkResult) checkResult.textContent = '';
+    }
   }
 
   // 폼 제출 처리
@@ -256,6 +388,22 @@ class ProCoreRegisterForm {
         firstError.focus();
         firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      return;
+    }
+
+    // 중복확인 여부 체크
+    const emailCheckResult = document.getElementById('emailCheckResult');
+    const nicknameCheckResult = document.getElementById('nicknameCheckResult');
+
+    if (!emailCheckResult || !emailCheckResult.textContent.includes('사용 가능')) {
+      alert('이메일 중복확인을 해주세요.');
+      this.fields.email.focus();
+      return;
+    }
+
+    if (!nicknameCheckResult || !nicknameCheckResult.textContent.includes('사용 가능')) {
+      alert('닉네임 중복확인을 해주세요.');
+      this.fields.nickname.focus();
       return;
     }
 

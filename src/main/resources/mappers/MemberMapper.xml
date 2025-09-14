@@ -40,7 +40,7 @@
       updated_at
     FROM member
     WHERE email = #{email}
-      AND status != 'SUSPENDED'
+      AND status != 'INACTIVE'
   </select>
 
   <!-- 회원 정보 수정 (Dynamic SQL) -->
@@ -66,7 +66,7 @@
   </update>
 
   <!-- 이메일 중복 체크 -->
-  <select id="countByEmail" parameterType="String" resultType="int">
+  <select id="countByEmail" parameterType="String" resultType="java.lang.Long">
     SELECT COUNT(*)
     FROM member
     WHERE email = #{email}

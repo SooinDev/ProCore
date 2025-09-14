@@ -9,4 +9,8 @@ public interface MemberService {
   MemberVO login(String email, String password);
 
   int updateMember(MemberVO memberVO);
+
+  boolean checkDuplicateEmail(String email);
+
+  boolean checkDuplicateNickname(String nickname);
 }

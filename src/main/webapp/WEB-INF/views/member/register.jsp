@@ -51,13 +51,23 @@
       <form id="registerForm" action="<c:url value='/member/register'/>" method="post" class="auth-form">
         <div class="form-group">
           <label for="email">이메일 주소 *</label>
-          <input type="email"
-                 id="email"
-                 name="email"
-                 required
-                 placeholder="이메일을 입력해주세요"
-                 autocomplete="email">
+          <div style="display: flex; gap: 10px;">
+            <input type="email"
+                   id="email"
+                   name="email"
+                   required
+                   placeholder="이메일을 입력해주세요"
+                   autocomplete="email"
+                   style="flex: 1;">
+            <button type="button"
+                    id="checkEmailBtn"
+                    class="btn-secondary"
+                    style="white-space: nowrap; padding: 0 15px;">
+              중복확인
+            </button>
+          </div>
           <div class="form-error" id="emailError"></div>
+          <div id="emailCheckResult" style="margin-top: 5px; font-size: 0.9rem;"></div>
         </div>
 
         <div class="form-group">
@@ -90,13 +100,23 @@
 
         <div class="form-group">
           <label for="nickname">닉네임 *</label>
-          <input type="text"
-                 id="nickname"
-                 name="nickname"
-                 required
-                 placeholder="2-10자의 닉네임을 입력해주세요"
-                 maxlength="10">
+          <div style="display: flex; gap: 10px;">
+            <input type="text"
+                   id="nickname"
+                   name="nickname"
+                   required
+                   placeholder="2-10자의 닉네임을 입력해주세요"
+                   maxlength="10"
+                   style="flex: 1;">
+            <button type="button"
+                    id="checkNicknameBtn"
+                    class="btn-secondary"
+                    style="white-space: nowrap; padding: 0 15px;">
+              중복확인
+            </button>
+          </div>
           <div class="form-error" id="nicknameError"></div>
+          <div id="nicknameCheckResult" style="margin-top: 5px; font-size: 0.9rem;"></div>
         </div>
 
         <div class="form-divider">
